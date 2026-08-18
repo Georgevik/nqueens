@@ -23,4 +23,11 @@
     <string name="game_queens_left_label">QUEENS LEFT</string>
     <string name="game_validate">Validate</string>
     <string name="game_reset">Reset</string>
+
+    <!-- Score screen -->
+    <string name="score_title">Scoreboard</string>
+    <string name="score_subtitle">Your best runs</string>
+    <string name="score_board_size">%1$d × %1$d board</string>
+    <string name="score_attempts">%1$d tries</string>
+    <string name="score_empty">No games played yet</string>
 </resources>

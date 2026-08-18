@@ -16,7 +16,7 @@ private data object ScoreRoute : KeyRoute
 
 @Composable
 fun RootNav(modifier: Modifier) {
-    val backStack = remember { mutableStateListOf<KeyRoute>(GameRoute) }
+    val backStack = remember { mutableStateListOf<KeyRoute>(ScoreRoute) }
 
     NavDisplay(
         modifier = modifier,
@@ -32,16 +32,12 @@ fun RootNav(modifier: Modifier) {
                         })
                 }
 
-                ScoreRoute -> NavEntry(ScoreRoute) {
-                    ScoreScreen(onExit = { backStack.removeLastOrNull() })
-                }
-
+                ScoreRoute -> NavEntry(ScoreRoute) { ScoreScreen() }
                 SetupRoute -> NavEntry(SetupRoute) {
                     SetupScreen(
                         onStart = { backStack.add(GameRoute) },
                         onScore = { backStack.add(ScoreRoute) })
                 }
             }
-        }
-    )
+        })
 }
