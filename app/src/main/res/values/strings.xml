@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">NQueens</string>
+
+    <!-- Setup screen -->
+    <string name="setup_title">Game setup</string>
+    <string name="setup_subtitle">Configure your N-queens parameters before starting</string>
+    <string name="setup_start_game">Start Game</string>
+    <string name="setup_scores">Scores</string>
+
+    <!-- Board size panel -->
+    <string name="board_size_title">Board size</string>
+    <string name="board_size_queens_label">QUEENS</string>
+
+    <!-- Help level panel -->
+    <string name="help_level_title">Help Level</string>
+    <string name="help_level_none">None</string>
+    <string name="help_level_errors_only">Errors only</string>
+    <string name="help_level_full">Full</string>
 </resources>
