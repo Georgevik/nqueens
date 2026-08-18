@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.georgevik.nqueens.ui.navigation.model.GameConfig
 import com.georgevik.nqueens.domain.model.HelpLevel
 import com.georgevik.nqueens.ui.screen.game.GameUi
 import com.georgevik.nqueens.ui.screen.game.component.Board

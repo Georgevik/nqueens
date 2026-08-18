@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -14,46 +15,45 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.georgevik.nqueens.R
-
-data class HelpUi(val options: List<String>, val selectedIndex: Int)
+import com.georgevik.nqueens.domain.model.HelpLevel
 
 @Composable
 fun HelpPanel(
+    selected: HelpLevel,
+    onSelected: (HelpLevel) -> Unit,
     modifier: Modifier = Modifier,
-    ui: HelpUi = HelpUi(
-        options = listOf(
-            stringResource(R.string.help_level_none),
-            stringResource(R.string.help_level_errors_only),
-            stringResource(R.string.help_level_full),
-        ),
-        selectedIndex = 0
-    ),
-    selectedIndex: Int,
-    onSelectedIndex: (Int) -> Unit
 ) {
+    val levels = HelpLevel.entries
+
     SettingsPanel(title = stringResource(R.string.help_level_title), modifier = modifier) {
         SingleChoiceSegmentedButtonRow(
             Modifier
                 .height(IntrinsicSize.Min)
                 .padding(top = 24.dp)
         ) {
-            ui.options.forEachIndexed { index, text ->
+            levels.forEachIndexed { index, level ->
                 SegmentedButton(
                     modifier = Modifier.fillMaxHeight(),
-                    selected = selectedIndex == index,
-                    onClick = { onSelectedIndex(index) },
+                    selected = level == selected,
+                    onClick = { onSelected(level) },
                     shape = SegmentedButtonDefaults.itemShape(
                         index = index,
-                        count = ui.options.size,
+                        count = levels.size,
                         baseShape = PanelShape
                     ),
                     icon = {},
                     label = {
                         Text(
-                            text = text,
+                            text = level.label(),
                             textAlign = TextAlign.Center,
-                            fontWeight = if (selectedIndex == index) FontWeight.Bold else FontWeight.Normal
+                            maxLines = 1,
+                            autoSize = TextAutoSize.StepBased(
+                                minFontSize = 10.sp,
+                                maxFontSize = 14.sp,
+                            ),
+                            fontWeight = if (level == selected) FontWeight.Bold else FontWeight.Normal
                         )
                     }
                 )
@@ -61,3 +61,12 @@ fun HelpPanel(
         }
     }
 }
+
+@Composable
+private fun HelpLevel.label(): String = stringResource(
+    when (this) {
+        HelpLevel.NONE -> R.string.help_level_none
+        HelpLevel.ERROR_ONLY -> R.string.help_level_errors_only
+        HelpLevel.FULL -> R.string.help_level_full
+    }
+)

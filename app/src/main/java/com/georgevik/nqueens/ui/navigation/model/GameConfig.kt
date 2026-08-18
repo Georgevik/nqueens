@@ -1,4 +1,4 @@
-package com.georgevik.nqueens.ui.screen.game.model
+package com.georgevik.nqueens.ui.navigation.model
 
 import com.georgevik.nqueens.domain.model.HelpLevel
 

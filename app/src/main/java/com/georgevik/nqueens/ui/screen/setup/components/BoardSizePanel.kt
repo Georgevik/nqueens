@@ -14,10 +14,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,35 +23,26 @@ import androidx.compose.ui.unit.dp
 import com.georgevik.nqueens.R
 import kotlin.math.roundToInt
 
-data class SliderUi(
-    val nQueens: Int,
-    val minQueens: Int,
-    val maxQueens: Int
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardSizePanel(
+    nQueens: Int,
+    onQueenUpdate: (Int) -> Unit,
+    range: IntRange,
     modifier: Modifier = Modifier,
-    ui: SliderUi = SliderUi(
-        nQueens = 8,
-        minQueens = 4,
-        maxQueens = 12
-    ),
-    onQueenUpdate: (Int) -> Unit
 ) {
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
-
     SettingsPanel(title = stringResource(R.string.board_size_title), modifier = modifier) {
         Text(
-            "8",
-            modifier = Modifier.padding(top = 32.dp),
-            style = MaterialTheme.typography.displayLarge
+            nQueens.toString(),
+            modifier = Modifier.padding(top = 24.dp),
+            style = MaterialTheme.typography.displayLarge,
+            color = MaterialTheme.colorScheme.primary,
         )
 
         Text(
             stringResource(R.string.board_size_queens_label),
-            style = MaterialTheme.typography.labelLarge
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Row(
@@ -63,7 +50,7 @@ fun BoardSizePanel(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                ui.minQueens.toString(),
+                range.first.toString(),
                 style = MaterialTheme.typography.labelLarge
             )
             Spacer(Modifier.size(8.dp))
@@ -76,9 +63,8 @@ fun BoardSizePanel(
             )
             Slider(
                 modifier = Modifier.weight(1f),
-                value = ui.nQueens.toFloat(),
-                onValueChangeFinished = { onQueenUpdate(sliderPosition.roundToInt()) },
-                onValueChange = { sliderPosition = it },
+                value = nQueens.toFloat(),
+                onValueChange = { onQueenUpdate(it.roundToInt()) },
                 colors = sliderColors,
                 thumb = {
                     Box(
@@ -99,12 +85,14 @@ fun BoardSizePanel(
                         thumbTrackGapSize = 0.dp,
                     )
                 },
-                steps = (ui.maxQueens - ui.minQueens),
-                valueRange = ui.minQueens.toFloat()..ui.maxQueens.toFloat()
+                // Interior stops only: endpoints are implicit, so subtract 1
+                // to land on every integer (4, 5, … , 12).
+                steps = (range.last - range.first - 1),
+                valueRange = range.first.toFloat()..range.last.toFloat()
             )
             Spacer(Modifier.size(8.dp))
             Text(
-                ui.maxQueens.toString(),
+                range.last.toString(),
                 style = MaterialTheme.typography.labelLarge
             )
         }
