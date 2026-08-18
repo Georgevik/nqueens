@@ -3,7 +3,6 @@ package com.georgevik.nqueens.ui.screen.setup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -12,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +62,7 @@ fun SetupScreen(onStart: () -> Unit, onScore: () -> Unit) {
             )
         }
 
-        ButtonRow(
+        SubmitButtons(
             modifier = Modifier.fillMaxWidth(),
             onScore = onScore,
             onStart = onStart
@@ -71,16 +71,16 @@ fun SetupScreen(onStart: () -> Unit, onScore: () -> Unit) {
 }
 
 @Composable
-fun ButtonRow(modifier: Modifier, onStart: () -> Unit, onScore: () -> Unit) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+fun SubmitButtons(modifier: Modifier, onStart: () -> Unit, onScore: () -> Unit) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(onClick = onStart) {
             Text(stringResource(R.string.setup_start_game))
         }
 
-        Button(onClick = onScore) {
+        TextButton(modifier = Modifier.padding(top = 8.dp), onClick = onScore) {
             Text(stringResource(R.string.setup_scores))
         }
     }
