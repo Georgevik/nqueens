@@ -1,6 +1,5 @@
 package com.georgevik.nqueens.ui
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -10,9 +9,8 @@ import com.georgevik.nqueens.ui.navigation.RootNav
 
 @Composable
 fun MainScreen() {
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerValues ->
-        Box(modifier = Modifier.padding(innerValues)) {
-            RootNav()
-        }
+    Scaffold { innerValues ->
+        RootNav(modifier = Modifier.fillMaxSize().padding(innerValues))
+
     }
 }
