@@ -6,7 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
-import com.georgevik.nqueens.ui.screen.game.GameScreen
+import com.georgevik.nqueens.ui.screen.game.model.GameScreen
 import com.georgevik.nqueens.ui.screen.score.ScoreScreen
 import com.georgevik.nqueens.ui.screen.setup.SetupScreen
 
@@ -16,7 +16,7 @@ private data object ScoreRoute : KeyRoute
 
 @Composable
 fun RootNav(modifier: Modifier) {
-    val backStack = remember { mutableStateListOf<KeyRoute>(SetupRoute) }
+    val backStack = remember { mutableStateListOf<KeyRoute>(GameRoute) }
 
     NavDisplay(
         modifier = modifier,
@@ -26,7 +26,6 @@ fun RootNav(modifier: Modifier) {
             when (key) {
                 GameRoute -> NavEntry(GameRoute) {
                     GameScreen(
-                        onBack = { backStack.removeLastOrNull() },
                         onScore = {
                             backStack.removeLastOrNull()
                             backStack.add(ScoreRoute)
