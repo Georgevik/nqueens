@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.rememberLifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
 import com.georgevik.nqueens.domain.model.HelpLevel
 import com.georgevik.nqueens.domain.model.Position
 import com.georgevik.nqueens.ui.navigation.model.GameConfig
@@ -36,6 +39,16 @@ fun GameScreen(
         factory.create(config)
     }
     val ui by vm.uiState.collectAsStateWithLifecycle()
+    val lifecycleOwner = rememberLifecycleOwner()
+
+    LaunchedEffect(vm) {
+        vm.uiEvent.flowWithLifecycle(lifecycleOwner.lifecycle).collect { event ->
+            when (event) {
+                GameEvent.Score -> onScore()
+                GameEvent.StartGame -> onNewGame()
+            }
+        }
+    }
 
     GameScreenContent(
         config = config,
@@ -52,8 +65,8 @@ fun GameScreen(
 
     if (ui.showVictory) {
         VictoryDialog(
-            onNewGame = { onNewGame() },
-            onViewScores = { onScore() },
+            onNewGame = { vm.onNewGame() },
+            onViewScores = { vm.onScore() },
         )
     }
 }

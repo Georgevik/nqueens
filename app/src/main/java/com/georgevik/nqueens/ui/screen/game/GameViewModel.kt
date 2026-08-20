@@ -82,7 +82,6 @@ class GameViewModel @AssistedInject constructor(
                     attempts = uiState.value.attempts
                 )
             )
-            _uiEvent.send(GameEvent.StartGame)
             _uiState.update { it.copy(showVictory = true) }
 
         } else {
@@ -126,6 +125,16 @@ class GameViewModel @AssistedInject constructor(
         return queenCells + attackedCells
     }
 
+    fun onNewGame() {
+        _uiState.update { it.copy(showVictory = false) }
+        viewModelScope.launch { _uiEvent.send(GameEvent.StartGame) }
+    }
+
+    fun onScore() {
+        _uiState.update { it.copy(showVictory = false) }
+        viewModelScope.launch { _uiEvent.send(GameEvent.Score) }
+    }
+
     @AssistedFactory
     interface Factory {
         fun create(gameConfig: GameConfig): GameViewModel
@@ -138,5 +147,6 @@ class GameViewModel @AssistedInject constructor(
 }
 
 sealed interface GameEvent {
+    data object Score : GameEvent
     data object StartGame : GameEvent
 }

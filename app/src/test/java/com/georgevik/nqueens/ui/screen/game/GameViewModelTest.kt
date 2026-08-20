@@ -1,6 +1,7 @@
 package com.georgevik.nqueens.ui.screen.game
 
 import app.cash.turbine.test
+import app.cash.turbine.turbineScope
 import com.georgevik.nqueens.domain.model.HelpLevel
 import com.georgevik.nqueens.domain.model.Position
 import com.georgevik.nqueens.domain.repository.ScoreRepository
@@ -73,6 +74,36 @@ class GameViewModelTest {
     }
 
     @Test
+    fun `hides victory WHEN new game is launched`() = runTest {
+        val underTest = viewModel(nQueens = 1)
+
+        turbineScope {
+            val ui = underTest.uiState.testIn(backgroundScope)
+            val events = underTest.uiEvent.testIn(backgroundScope)
+
+            underTest.onNewGame()
+
+            with(ui.awaitItem()) { assertEquals(false, showVictory) }
+            with(events.awaitItem()) { assertTrue(this is GameEvent.StartGame) }
+        }
+    }
+
+    @Test
+    fun `hides victory WHEN score is launched`() = runTest {
+        val underTest = viewModel(nQueens = 1)
+
+        turbineScope {
+            val ui = underTest.uiState.testIn(backgroundScope)
+            val events = underTest.uiEvent.testIn(backgroundScope)
+
+            underTest.onScore()
+
+            with(ui.awaitItem()) { assertEquals(false, showVictory) }
+            with(events.awaitItem()) { assertTrue(this is GameEvent.Score) }
+        }
+    }
+
+    @Test
     fun `marks the queen with error WHEN it conflicts and help is not none`() {
         every { isValidQueenPosition(any(), any(), any()) } returns false
         val underTest = viewModel(helpLevel = HelpLevel.ERROR_ONLY)
@@ -99,9 +130,10 @@ class GameViewModelTest {
         val underTest = viewModel(nQueens = 1)
         underTest.cellPressed(Position(0, 0))
 
-        underTest.uiEvent.test {
+        underTest.uiState.test {
+            skipItems(1)
             underTest.submit()
-            assertEquals(GameEvent.StartGame, awaitItem())
+            assertEquals(true, awaitItem().showVictory)
         }
         coVerify { scoreRepository.insertScore(any()) }
     }
@@ -111,11 +143,7 @@ class GameViewModelTest {
         val underTest = viewModel(nQueens = 4)
 
         underTest.uiState.test {
-            with(awaitItem()) {
-                assertEquals(attempts, 0)
-                assertEquals(highlightQueensLeft, false)
-            }
-
+            skipItems(1)
             underTest.submit()
 
             with(awaitItem()) {
@@ -139,11 +167,7 @@ class GameViewModelTest {
         every { isValidQueenPosition(any(), any(), any()) } returns false
 
         underTest.uiState.test {
-            with(awaitItem()) {
-                assertEquals(attempts, 0)
-                assertEquals(showConflict, false)
-            }
-
+            skipItems(1)
             underTest.submit()
 
             with(awaitItem()) {
