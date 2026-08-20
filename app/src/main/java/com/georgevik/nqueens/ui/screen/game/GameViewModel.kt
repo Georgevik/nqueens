@@ -48,35 +48,16 @@ class GameViewModel @AssistedInject constructor(
     }
 
     fun cellPressed(position: Position) {
-        val isQueen = _uiState.value.queens.any { it.position == position }
+        val queens = _uiState.value.queens.map { it.position }.toSet()
 
-        if (isQueen) {
-            removeQueen(position)
+        val newQueens = if (position in queens) {
+            queens - position
         } else {
-            addQueen(position)
+            if (queens.size >= gameConfig.nQueens) return
+            queens + position
         }
-    }
 
-    private fun addQueen(position: Position) {
-        if (_uiState.value.queens.size >= gameConfig.nQueens) return
-
-        _uiState.update { ui ->
-            val newCells = ui.markedCells.toMutableList()
-            newCells.add(Cell(position, isQueen = true))
-            ui.copy(markedCells = calculateCellFloors(newCells))
-        }
-    }
-
-    private fun removeQueen(position: Position) {
-        _uiState.update { ui ->
-            val newCells = ui.markedCells.filterNot { it.isQueen && it.position == position }
-
-            if (gameConfig.helpLevel == HelpLevel.NONE) {
-                ui.copy(markedCells = newCells)
-            } else {
-                ui.copy(markedCells = calculateCellFloors(newCells))
-            }
-        }
+        _uiState.update { it.copy(markedCells = buildMarkedCells(newQueens)) }
     }
 
 
@@ -111,18 +92,38 @@ class GameViewModel @AssistedInject constructor(
         }
     }
 
-    private fun calculateCellFloors(allCell: List<Cell>): List<Cell> {
-        val queens = allCell.filter { it.isQueen }.map { it.position }.toSet()
+    private fun buildMarkedCells(queens: Set<Position>): List<Cell> {
+        val help = gameConfig.helpLevel
+        val boardSize = gameConfig.nQueens
 
-        return allCell.map { cell ->
-            val isError = !isValidQueenPosition(
-                queen = cell.position,
-                nQueenSize = gameConfig.nQueens,
-                boardQueens = queens
+        val queenCells = queens.map { position ->
+            val showError = help != HelpLevel.NONE && !isValidQueenPosition(
+                queen = position,
+                nQueenSize = boardSize,
+                boardQueens = queens,
             )
-
-            cell.copy(showError = isError)
+            Cell(position = position, isQueen = true, showError = showError)
         }
+
+        if (help != HelpLevel.FULL) return queenCells
+
+        val attackedCells = buildList {
+            (0 until boardSize).forEach { row ->
+                (0 until boardSize).forEach { col ->
+                    val position = Position(col = col, row = row)
+                    if (position in queens) return@forEach
+                    val attacked = !isValidQueenPosition(
+                        queen = position,
+                        nQueenSize = boardSize,
+                        boardQueens = queens,
+                    )
+                    if (attacked) {
+                        add(Cell(position = position, isQueen = false, isAttacked = true))
+                    }
+                }
+            }
+        }
+        return queenCells + attackedCells
     }
 
     @AssistedFactory

@@ -16,12 +16,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.georgevik.nqueens.domain.model.Position
 import com.georgevik.nqueens.ui.screen.game.model.Cell
 
 private const val QUEEN_GLYPH = "♛"
+private const val BLOCKED_GLYPH = "✕"
 
 @Composable
 fun Board(
@@ -33,6 +35,7 @@ fun Board(
     val light = MaterialTheme.colorScheme.primaryContainer
     val dark = MaterialTheme.colorScheme.surfaceContainerHighest
     val errorColor = MaterialTheme.colorScheme.errorContainer
+    val crossColor = MaterialTheme.colorScheme.tertiary
     val cellByPosition = remember(markedCells) { markedCells.associateBy { it.position } }
 
     Column(modifier = modifier.clip(RoundedCornerShape(8.dp))) {
@@ -58,15 +61,15 @@ fun Board(
                             .clickable { onCellPress(Position(col = col, row = row)) },
                         contentAlignment = Alignment.Center,
                     ) {
-                        if (cell?.isQueen == true) {
-                            Text(
-                                text = QUEEN_GLYPH,
+                        when {
+                            cell?.isQueen == true -> CellGlyph(
+                                glyph = QUEEN_GLYPH,
                                 color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1,
-                                autoSize = TextAutoSize.StepBased(
-                                    minFontSize = 12.sp,
-                                    maxFontSize = 96.sp,
-                                )
+                            )
+
+                            cell?.isAttacked == true -> CellGlyph(
+                                glyph = BLOCKED_GLYPH,
+                                color = crossColor,
                             )
                         }
                     }
@@ -74,4 +77,17 @@ fun Board(
             }
         }
     }
+}
+
+@Composable
+private fun CellGlyph(glyph: String, color: Color) {
+    Text(
+        text = glyph,
+        color = color,
+        maxLines = 1,
+        autoSize = TextAutoSize.StepBased(
+            minFontSize = 12.sp,
+            maxFontSize = 96.sp,
+        ),
+    )
 }
