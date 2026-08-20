@@ -1,10 +1,14 @@
 package com.georgevik.nqueens.ui.screen.game.component
 
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +41,7 @@ fun GameControls(
     startTime: Long,
     attempts: Int,
     queensLeft: Int,
+    highlightQueensLeft: Boolean,
     onReset: () -> Unit,
     onSubmit: () -> Unit,
     modifier: Modifier = Modifier,
@@ -57,6 +63,7 @@ fun GameControls(
             CardPanel(
                 label = stringResource(R.string.game_queens_left_label),
                 value = queensLeft.toString(),
+                highlight = highlightQueensLeft,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
@@ -88,7 +95,23 @@ fun GameControls(
 }
 
 @Composable
-fun CardPanel(label: String, value: String, modifier: Modifier = Modifier) {
+fun CardPanel(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    highlight: Boolean = false,
+) {
+    val transition = updateTransition(targetState = highlight, label = "cardHighlight")
+    val scale by transition.animateFloat(
+        label = "textScale",
+        transitionSpec = { tween(durationMillis = 250) },
+    ) { on -> if (on) 2f else 1f }
+
+    val valueColor by transition.animateColor(
+        label = "textColor",
+        transitionSpec = { tween(durationMillis = 250) },
+    ) { on -> if (on) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface }
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
@@ -105,8 +128,10 @@ fun CardPanel(label: String, value: String, modifier: Modifier = Modifier) {
         )
         Text(
             text = value,
+            color = valueColor,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier.scale(scale),
         )
     }
 }
