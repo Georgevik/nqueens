@@ -28,8 +28,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.georgevik.nqueens.R
-import com.georgevik.nqueens.ui.navigation.model.GameConfig
 import com.georgevik.nqueens.domain.model.HelpLevel
+import com.georgevik.nqueens.ui.navigation.model.GameConfig
 import com.georgevik.nqueens.ui.screen.setup.components.BoardSizePanel
 import com.georgevik.nqueens.ui.screen.setup.components.HelpPanel
 import com.georgevik.nqueens.ui.theme.NQueensTheme
@@ -42,7 +42,7 @@ private const val MAX_QUEENS = 12
 fun SetupScreen(onStart: (GameConfig) -> Unit, onScore: () -> Unit) {
     val queenRange: IntRange = remember { MIN_QUEENS..MAX_QUEENS }
     var nQueens by rememberSaveable { mutableIntStateOf((queenRange.last-queenRange.first) / 2 + queenRange.first) }
-    var helpLevel by rememberSaveable { mutableStateOf(HelpLevel.NONE) }
+    var helpLevel by rememberSaveable { mutableStateOf(HelpLevel.ERROR_ONLY) }
 
     Column {
         Column(
