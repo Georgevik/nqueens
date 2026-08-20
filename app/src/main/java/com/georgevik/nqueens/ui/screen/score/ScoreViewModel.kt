@@ -20,10 +20,11 @@ class ScoreViewModel @Inject constructor(
     scoreRepository: ScoreRepository,
 ) : ViewModel() {
 
-    val scores: Flow<PagingData<ScoreboardRowUi>> =
+    val scores: Flow<PagingData<ScoreboardRowUi>> by lazy {
         scoreRepository.scores()
             .map { pagingData -> pagingData.map { it.toUi() } }
             .cachedIn(viewModelScope)
+    }
 }
 
 private fun Score.toUi() = ScoreboardRowUi(

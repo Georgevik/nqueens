@@ -85,8 +85,6 @@ fun BoardSizePanel(
                         thumbTrackGapSize = 0.dp,
                     )
                 },
-                // Interior stops only: endpoints are implicit, so subtract 1
-                // to land on every integer (4, 5, … , 12).
                 steps = (range.last - range.first - 1),
                 valueRange = range.first.toFloat()..range.last.toFloat()
             )
