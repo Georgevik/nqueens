@@ -28,6 +28,6 @@
     <string name="score_title">Scoreboard</string>
     <string name="score_subtitle">Your best runs</string>
     <string name="score_board_size">%1$d × %1$d board</string>
-    <string name="score_attempts">%1$d tries</string>
+    <string name="score_attempts">%1$d errors</string>
     <string name="score_empty">No games played yet</string>
 </resources>

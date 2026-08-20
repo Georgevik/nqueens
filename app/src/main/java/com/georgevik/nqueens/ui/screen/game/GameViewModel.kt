@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.georgevik.nqueens.domain.model.HelpLevel
 import com.georgevik.nqueens.domain.model.Position
+import com.georgevik.nqueens.domain.model.Score
+import com.georgevik.nqueens.domain.repository.ScoreRepository
 import com.georgevik.nqueens.domain.usecase.IsValidQueenPosition
 import com.georgevik.nqueens.ui.navigation.model.GameConfig
 import com.georgevik.nqueens.ui.screen.game.model.Cell
@@ -18,11 +20,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.util.UUID
 
 @HiltViewModel(assistedFactory = GameViewModel.Factory::class)
 class GameViewModel @AssistedInject constructor(
     @Assisted private val gameConfig: GameConfig,
-    private val isValidQueenPosition: IsValidQueenPosition
+    private val isValidQueenPosition: IsValidQueenPosition,
+    private val scoreRepository: ScoreRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(newGameUI)
@@ -90,6 +95,15 @@ class GameViewModel @AssistedInject constructor(
                     boardQueens = queens
                 )
             }) {
+            scoreRepository.insertScore(
+                Score(
+                    id = UUID.randomUUID().toString(),
+                    playedAt = Instant.now(),
+                    nQueens = gameConfig.nQueens,
+                    timeConsumed = System.currentTimeMillis() - uiState.value.startTime,
+                    attempts = uiState.value.attempts
+                )
+            )
             _uiEvent.send(GameEvent.Success)
         } else {
             _uiState.update { it.copy(attempts = it.attempts + 1) }

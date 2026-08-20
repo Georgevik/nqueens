@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "scores")
 data class ScoreEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val playedAt: Long, // epoch millis
+    @PrimaryKey val id: String,
+    val playedAt: Long,
     val nQueens: Int,
     val timeConsumedMillis: Long,
     val attempts: Int,
