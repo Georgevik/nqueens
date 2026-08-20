@@ -15,6 +15,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -22,6 +23,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel(assistedFactory = GameViewModel.Factory::class)
 class GameViewModel @AssistedInject constructor(
@@ -30,21 +33,14 @@ class GameViewModel @AssistedInject constructor(
     private val scoreRepository: ScoreRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(newGameUI)
+    private val _uiState = MutableStateFlow(GameUi.create())
     val uiState = _uiState.asStateFlow()
 
     private val _uiEvent = Channel<GameEvent>()
     val uiEvent = _uiEvent.consumeAsFlow()
 
-    private val newGameUI
-        get() = GameUi(
-            attempts = 0,
-            markedCells = emptyList(),
-            startTime = System.currentTimeMillis(),
-        )
-
     fun reset() {
-        _uiState.update { newGameUI }
+        _uiState.update { GameUi.create() }
     }
 
     fun cellPressed(position: Position) {
@@ -64,8 +60,9 @@ class GameViewModel @AssistedInject constructor(
     fun submit() = viewModelScope.launch {
         val queens = uiState.value.queens.map { it.position }.toSet()
         if (queens.size != gameConfig.nQueens) {
-            _uiState.update { it.copy(attempts = it.attempts + 1) }
-            _uiEvent.send(GameEvent.MissingQueens)
+            _uiState.update { it.copy(attempts = it.attempts + 1, highlightQueensLeft = true) }
+            delay(DELAY_HIGHLIGHT_LEFT_QUEENS)
+            _uiState.update { it.copy(highlightQueensLeft = false) }
             return@launch
         }
 
@@ -85,10 +82,13 @@ class GameViewModel @AssistedInject constructor(
                     attempts = uiState.value.attempts
                 )
             )
-            _uiEvent.send(GameEvent.Success)
+            _uiEvent.send(GameEvent.StartGame)
+            _uiState.update { it.copy(showVictory = true) }
+
         } else {
-            _uiState.update { it.copy(attempts = it.attempts + 1) }
-            _uiEvent.send(GameEvent.QueensInWrongPosition)
+            _uiState.update { it.copy(attempts = it.attempts + 1, showConflict = true) }
+            delay(DELAY_BANNER)
+            _uiState.update { it.copy(showConflict = false) }
         }
     }
 
@@ -130,10 +130,13 @@ class GameViewModel @AssistedInject constructor(
     interface Factory {
         fun create(gameConfig: GameConfig): GameViewModel
     }
+
+    companion object {
+        private val DELAY_BANNER = 2.seconds
+        private val DELAY_HIGHLIGHT_LEFT_QUEENS = 500.milliseconds
+    }
 }
 
 sealed interface GameEvent {
-    data object MissingQueens : GameEvent
-    data object QueensInWrongPosition : GameEvent
-    data object Success : GameEvent
+    data object StartGame : GameEvent
 }

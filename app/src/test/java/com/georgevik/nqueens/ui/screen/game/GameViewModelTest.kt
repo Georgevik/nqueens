@@ -101,32 +101,60 @@ class GameViewModelTest {
 
         underTest.uiEvent.test {
             underTest.submit()
-            assertEquals(GameEvent.Success, awaitItem())
+            assertEquals(GameEvent.StartGame, awaitItem())
         }
         coVerify { scoreRepository.insertScore(any()) }
     }
 
     @Test
-    fun `emits MissingQueens and does not save WHEN not all queens are placed`() = runTest {
+    fun `emits highlightQueensLeft WHEN not all queens are placed`() = runTest {
         val underTest = viewModel(nQueens = 4)
 
-        underTest.uiEvent.test {
+        underTest.uiState.test {
+            with(awaitItem()) {
+                assertEquals(attempts, 0)
+                assertEquals(highlightQueensLeft, false)
+            }
+
             underTest.submit()
-            assertEquals(GameEvent.MissingQueens, awaitItem())
+
+            with(awaitItem()) {
+                assertEquals(attempts, 1)
+                assertEquals(highlightQueensLeft, true)
+            }
+
+            with(awaitItem()) {
+                assertEquals(attempts, 1)
+                assertEquals(highlightQueensLeft, false)
+            }
         }
         assertEquals(1, underTest.uiState.value.attempts)
         coVerify(exactly = 0) { scoreRepository.insertScore(any()) }
     }
 
     @Test
-    fun `emits QueensInWrongPosition WHEN queens are placed but invalid`() = runTest {
+    fun `emits showConflict WHEN queens are placed but invalid`() = runTest {
         val underTest = viewModel(nQueens = 1)
         underTest.cellPressed(Position(0, 0))
         every { isValidQueenPosition(any(), any(), any()) } returns false
 
-        underTest.uiEvent.test {
+        underTest.uiState.test {
+            with(awaitItem()) {
+                assertEquals(attempts, 0)
+                assertEquals(showConflict, false)
+            }
+
             underTest.submit()
-            assertEquals(GameEvent.QueensInWrongPosition, awaitItem())
+
+            with(awaitItem()) {
+                assertEquals(attempts, 1)
+                assertEquals(showConflict, true)
+            }
+
+            with(awaitItem()) {
+                assertEquals(attempts, 1)
+                assertEquals(showConflict, false)
+            }
         }
         coVerify(exactly = 0) { scoreRepository.insertScore(any()) }
     }

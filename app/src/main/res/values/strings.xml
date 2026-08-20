@@ -30,6 +30,9 @@
     <string name="victory_new_game">New Game</string>
     <string name="victory_view_scores">View Scores</string>
 
+    <!-- Conflict dialog -->
+    <string name="conflict_message">Some Queens are conflicting.</string>
+
     <!-- Score screen -->
     <string name="score_title">Scoreboard</string>
     <string name="score_subtitle">Your best runs</string>
