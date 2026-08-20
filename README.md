@@ -20,7 +20,8 @@ Or open the project in Android Studio and Run the `app` configuration.
 
 ## Architecture
 
-Lean, layered, unidirectional. The guiding principle is **UI is dumb, logic is testable**.
+- Project: **Clean Architecture**
+- View Architecture: **MVVM + MVI**
 
 ```
 ui/            Compose screens + components (no game rules live here)
