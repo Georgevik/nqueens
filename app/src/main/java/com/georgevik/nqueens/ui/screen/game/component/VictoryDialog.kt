@@ -1,5 +1,6 @@
 package com.georgevik.nqueens.ui.screen.game.component
 
+import android.media.MediaPlayer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,8 +12,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,6 +32,13 @@ fun VictoryDialog(
     onViewScores: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+    DisposableEffect(Unit) {
+        val player = MediaPlayer.create(context, R.raw.victory)
+        player?.start()
+        onDispose { player?.release() }
+    }
+
     Dialog(
         onDismissRequest = {},
         properties = DialogProperties(
