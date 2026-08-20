@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.georgevik.nqueens.R
@@ -62,7 +63,9 @@ fun BoardSizePanel(
                 inactiveTickColor = MaterialTheme.colorScheme.primaryContainer
             )
             Slider(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("board_size_slider"),
                 value = nQueens.toFloat(),
                 onValueChange = { onQueenUpdate(it.roundToInt()) },
                 colors = sliderColors,
