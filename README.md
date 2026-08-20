@@ -43,7 +43,8 @@ infra/         cross-cutting helpers (formatting extensions)
 
 - **MVVM with a light MVI flavor**
     - Each screen has a ViewModel that exposes an immutable `StateFlow<UiState>` to drive the UI
-    - The game additionally emits one-shot effects through a `Channel` in response to user actions
+  - The game additionally emits one-shot events through a `Channel` for banners, navigation or
+    alerts
 - **Separation of UI and logic**
     - UI and navigation are kept separate from business logic
     - Composables only render from a `UiState`
