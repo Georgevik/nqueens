@@ -27,6 +27,7 @@ import com.georgevik.nqueens.domain.model.Position
 import com.georgevik.nqueens.ui.navigation.model.GameConfig
 import com.georgevik.nqueens.ui.screen.game.component.Board
 import com.georgevik.nqueens.ui.screen.game.component.GameControls
+import com.georgevik.nqueens.ui.screen.game.component.VictoryDialog
 import com.georgevik.nqueens.ui.screen.game.model.Cell
 import com.georgevik.nqueens.ui.screen.game.model.GameUi
 import com.georgevik.nqueens.ui.theme.NQueensTheme
@@ -38,6 +39,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun GameScreen(
     config: GameConfig,
+    onNewGame: () -> Unit,
     onScore: () -> Unit,
 ) {
     val vm: GameViewModel = hiltViewModel<GameViewModel, GameViewModel.Factory> { factory ->
@@ -46,6 +48,7 @@ fun GameScreen(
     val lifecycleOwner = rememberLifecycleOwner()
     val ui by vm.uiState.collectAsStateWithLifecycle()
     var highlightQueensLeft by remember { mutableStateOf(false) }
+    var showVictory by remember { mutableStateOf(false) }
 
     LaunchedEffect(vm) {
         var queensLeftJob: Job? = null
@@ -61,7 +64,7 @@ fun GameScreen(
                 }
 
                 GameEvent.QueensInWrongPosition -> Unit
-                GameEvent.Success -> onScore()
+                GameEvent.Success -> showVictory = true
             }
         }
     }
@@ -77,6 +80,19 @@ fun GameScreen(
                 UserAction.Submit -> vm.submit()
             }
         })
+
+    if (showVictory) {
+        VictoryDialog(
+            onNewGame = {
+                showVictory = false
+                onNewGame()
+            },
+            onViewScores = {
+                showVictory = false
+                onScore()
+            },
+        )
+    }
 }
 
 @Composable

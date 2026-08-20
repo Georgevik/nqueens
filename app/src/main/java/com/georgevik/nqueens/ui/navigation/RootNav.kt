@@ -35,7 +35,11 @@ fun RootNav(modifier: Modifier) {
         entryProvider = entryProvider {
             entry<GameRoute> {
                 GameScreen(
-                    config = it.config, onScore = {
+                    config = it.config,
+                    onNewGame = {
+                        backStack.removeLastOrNull()
+                    },
+                    onScore = {
                         backStack.removeLastOrNull()
                         backStack.add(ScoreRoute)
                     })

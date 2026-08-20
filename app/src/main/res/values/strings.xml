@@ -24,6 +24,12 @@
     <string name="game_validate">Validate</string>
     <string name="game_reset">Reset</string>
 
+    <!-- Victory dialog -->
+    <string name="victory_title">Victory!</string>
+    <string name="victory_message">All Queens have been placed safely on the board.</string>
+    <string name="victory_new_game">New Game</string>
+    <string name="victory_view_scores">View Scores</string>
+
     <!-- Score screen -->
     <string name="score_title">Scoreboard</string>
     <string name="score_subtitle">Your best runs</string>
