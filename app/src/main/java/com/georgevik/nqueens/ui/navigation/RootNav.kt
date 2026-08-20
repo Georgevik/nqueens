@@ -8,12 +8,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.georgevik.nqueens.ui.navigation.model.GameConfig
-import com.georgevik.nqueens.ui.screen.game.model.GameScreen
+import com.georgevik.nqueens.ui.screen.game.GameScreen
 import com.georgevik.nqueens.ui.screen.score.ScoreScreen
 import com.georgevik.nqueens.ui.screen.setup.SetupScreen
 
