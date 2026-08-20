@@ -11,7 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-class WinGameTest {
+class SetupScreenTest {
 
     @get:Rule
     val composeRule = createComposeRule()
