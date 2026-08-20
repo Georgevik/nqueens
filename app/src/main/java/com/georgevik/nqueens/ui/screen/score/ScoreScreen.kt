@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -16,15 +15,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.georgevik.nqueens.R
 import com.georgevik.nqueens.ui.screen.score.components.ScoreRow
-import com.georgevik.nqueens.ui.screen.score.model.ScoreUi
 import com.georgevik.nqueens.ui.screen.score.model.ScoreboardRowUi
 import com.georgevik.nqueens.ui.theme.NQueensTheme
+import kotlinx.coroutines.flow.flowOf
 import java.util.UUID
 
 @Composable
-fun ScoreScreen(ui: ScoreUi = ScoreUi(scoreboard = mockedScores)) {
+fun ScoreScreen(viewModel: ScoreViewModel = hiltViewModel()) {
+    val scores = viewModel.scores.collectAsLazyPagingItems()
+    ScoreContent(scores = scores)
+}
+
+@Composable
+private fun ScoreContent(scores: LazyPagingItems<ScoreboardRowUi>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,66 +59,35 @@ fun ScoreScreen(ui: ScoreUi = ScoreUi(scoreboard = mockedScores)) {
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            itemsIndexed(ui.scoreboard, key = { _, row -> row.id }) { index, row ->
-                ScoreRow(rank = index + 1, row = row)
+            items(
+                count = scores.itemCount,
+                key = scores.itemKey { it.id },
+            ) { index ->
+                scores[index]?.let { row -> ScoreRow(rank = index + 1, row = row) }
             }
         }
     }
 }
 
-private val mockedScores = listOf(
-    ScoreboardRowUi(
-        id = UUID.randomUUID().toString(),
-        date = "Aug 09",
-        nQueens = 4,
-        timeConsumed = "00:18",
-        attempts = 1
-    ),
-    ScoreboardRowUi(
-        id = UUID.randomUUID().toString(),
-        date = "Aug 17",
-        nQueens = 6,
-        timeConsumed = "00:52",
-        attempts = 2
-    ),
-    ScoreboardRowUi(
-        id = UUID.randomUUID().toString(),
-        date = "Aug 18",
-        nQueens = 8,
-        timeConsumed = "01:24",
-        attempts = 3
-    ),
-    ScoreboardRowUi(
-        id = UUID.randomUUID().toString(),
-        date = "Aug 05",
-        nQueens = 8,
-        timeConsumed = "01:47",
-        attempts = 4
-    ),
-    ScoreboardRowUi(
-        id = UUID.randomUUID().toString(),
-        date = "Aug 15",
-        nQueens = 8,
-        timeConsumed = "02:10",
-        attempts = 5
-    ),
-    ScoreboardRowUi(
-        id = UUID.randomUUID().toString(),
-        date = "Aug 12",
-        nQueens = 10,
-        timeConsumed = "04:38",
-        attempts = 7
-    ),
-)
-
 @Preview(showSystemUi = true)
 @Composable
 fun ScoreScreenPreview() {
+    val scores = flowOf(PagingData.from(previewScores)).collectAsLazyPagingItems()
     NQueensTheme {
         Scaffold { padding ->
             Box(modifier = Modifier.padding(padding)) {
-                ScoreScreen()
+                ScoreContent(scores = scores)
             }
         }
     }
+}
+
+private val previewScores = List(4) { i ->
+    ScoreboardRowUi(
+        id = UUID.randomUUID().toString(),
+        date = "04-08-1999",
+        nQueens = 4 + i,
+        timeConsumed = "0$i:${i}0:2",
+        attempts = i + 1,
+    )
 }

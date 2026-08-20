@@ -10,6 +10,6 @@ interface ScoreDao {
     @Insert
     suspend fun insert(score: ScoreEntity)
 
-    @Query("SELECT * FROM scores ORDER BY playedAt DESC")
+    @Query("SELECT * FROM scores ORDER BY timeConsumedMillis ASC")
     fun scorePaged(): PagingSource<Int, ScoreEntity>
 }
