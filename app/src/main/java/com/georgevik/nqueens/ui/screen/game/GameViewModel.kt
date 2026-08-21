@@ -73,16 +73,17 @@ class GameViewModel @AssistedInject constructor(
                     boardQueens = queens
                 )
             }) {
+            val timeConsumed = System.currentTimeMillis() - uiState.value.startTime
             scoreRepository.insertScore(
                 Score(
                     id = UUID.randomUUID().toString(),
                     playedAt = Instant.now(),
                     nQueens = gameConfig.nQueens,
-                    timeConsumed = System.currentTimeMillis() - uiState.value.startTime,
+                    timeConsumed = timeConsumed,
                     attempts = uiState.value.attempts
                 )
             )
-            _uiState.update { it.copy(showVictory = true) }
+            _uiState.update { it.copy(showVictory = true, timeConsumedMillis = timeConsumed) }
 
         } else {
             _uiState.update { it.copy(attempts = it.attempts + 1, showConflict = true) }

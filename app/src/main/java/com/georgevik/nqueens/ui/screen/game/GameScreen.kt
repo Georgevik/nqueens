@@ -107,6 +107,7 @@ private fun GameScreenContent(
             queensLeft = (config.nQueens - ui.queens.size).coerceAtLeast(0),
             highlightQueensLeft = highlightQueensLeft,
             conflictBanner = conflictBanner,
+            timeConsumed = ui.timeConsumedMillis,
             onReset = { onUserAction(UserAction.Reset) },
             onSubmit = { onUserAction(UserAction.Submit) },
         )
@@ -126,6 +127,7 @@ fun GameScreenPreview() {
         highlightQueensLeft = false,
         showConflict = false,
         showVictory = false,
+        timeConsumedMillis = null
     )
 
     NQueensTheme {

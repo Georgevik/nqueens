@@ -7,6 +7,7 @@ data class GameUi(
     val highlightQueensLeft: Boolean,
     val showConflict: Boolean,
     val showVictory: Boolean,
+    val timeConsumedMillis: Long?
 ) {
     val queens = markedCells.filter { it.isQueen }
 
@@ -18,6 +19,7 @@ data class GameUi(
             highlightQueensLeft = false,
             showConflict = false,
             showVictory = false,
+            timeConsumedMillis = null
         )
     }
 }

@@ -4,12 +4,14 @@ import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.georgevik.nqueens.domain.model.HelpLevel
 import com.georgevik.nqueens.domain.model.Position
+import com.georgevik.nqueens.domain.model.Score
 import com.georgevik.nqueens.domain.repository.ScoreRepository
 import com.georgevik.nqueens.domain.usecase.IsValidQueenPosition
 import com.georgevik.nqueens.ui.navigation.model.GameConfig
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -17,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -136,6 +139,42 @@ class GameViewModelTest {
             assertEquals(true, awaitItem().showVictory)
         }
         coVerify { scoreRepository.insertScore(any()) }
+    }
+
+    @Test
+    fun `has null timeConsumedMillis initially`() {
+        val underTest = viewModel()
+
+        assertNull(underTest.uiState.value.timeConsumedMillis)
+    }
+
+    @Test
+    fun `sets timeConsumedMillis to the saved score time WHEN a valid solution is submitted`() =
+        runTest {
+            val underTest = viewModel(nQueens = 1)
+            underTest.cellPressed(Position(0, 0))
+            val savedScore = slot<Score>()
+
+            underTest.uiState.test {
+                skipItems(1)
+                underTest.submit()
+                assertEquals(true, awaitItem().showVictory)
+            }
+
+            coVerify { scoreRepository.insertScore(capture(savedScore)) }
+            val time = underTest.uiState.value.timeConsumedMillis
+            assertEquals(savedScore.captured.timeConsumed, time)
+        }
+
+    @Test
+    fun `keeps timeConsumedMillis null WHEN queens are placed but invalid`() = runTest {
+        val underTest = viewModel(nQueens = 1)
+        underTest.cellPressed(Position(0, 0))
+        every { isValidQueenPosition(any(), any(), any()) } returns false
+
+        underTest.submit()
+
+        assertNull(underTest.uiState.value.timeConsumedMillis)
     }
 
     @Test

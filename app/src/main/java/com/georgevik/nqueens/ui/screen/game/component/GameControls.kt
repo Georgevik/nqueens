@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.georgevik.nqueens.R
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
@@ -45,6 +46,7 @@ fun GameControls(
     queensLeft: Int,
     highlightQueensLeft: Boolean,
     conflictBanner: Boolean,
+    timeConsumed: Long?,
     onReset: () -> Unit,
     onSubmit: () -> Unit,
     modifier: Modifier = Modifier,
@@ -65,6 +67,7 @@ fun GameControls(
         ) {
             TimerCounter(
                 startTime = startTime,
+                fixedTime = timeConsumed,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
@@ -147,10 +150,15 @@ fun CardPanel(
 
 
 @Composable
-fun TimerCounter(startTime: Long, modifier: Modifier = Modifier) {
+fun TimerCounter(startTime: Long, fixedTime: Long?, modifier: Modifier = Modifier) {
     var elapsedMillis by remember(startTime) { mutableLongStateOf(0L) }
-    LaunchedEffect(startTime) {
-        while (true) {
+    LaunchedEffect(startTime, fixedTime) {
+        fixedTime?.let {
+            elapsedMillis = fixedTime
+            return@LaunchedEffect
+        }
+
+        while (isActive) {
             elapsedMillis = System.currentTimeMillis() - startTime
             delay(100.milliseconds)
         }
