@@ -1,6 +1,7 @@
 package com.georgevik.nqueens.ui.screen.game.component
 
 import android.media.MediaPlayer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.georgevik.nqueens.R
+import com.georgevik.nqueens.ui.effects.sparks.SparkBox
 import com.georgevik.nqueens.ui.theme.NQueensTheme
 
 @Composable
@@ -55,27 +57,34 @@ fun VictoryDialog(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = stringResource(R.string.victory_title),
-                    style = MaterialTheme.typography.displayMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    textAlign = TextAlign.Center,
-                )
+                Box(contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = stringResource(R.string.victory_title),
+                            modifier = Modifier.padding(top = 8.dp),
+                            style = MaterialTheme.typography.displayMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            textAlign = TextAlign.Center,
+                        )
 
-                Text(
-                    text = stringResource(R.string.victory_message),
-                    modifier = Modifier.padding(top = 12.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
+
+                        Text(
+                            text = stringResource(R.string.victory_message),
+                            modifier = Modifier.padding(top = 20.dp, bottom = 40.dp),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+
+                    SparkBox(modifier = Modifier.matchParentSize(), nSparks = 50)
+                }
 
                 Button(
                     onClick = onNewGame,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 40.dp)
                         .height(52.dp),
                 ) {
                     Text(
